@@ -1,16 +1,18 @@
 import mongoose, { Document, ObjectId, Schema, model } from "mongoose";
+
 import { connectDB } from "./config/mongo";
 
 connectDB();
 
 // Interfaz
-interface Libro extends Document {
+interface DatosLibro {
     titulo: string;
     autor: string;
     anio: number;
     genero: string;
 }
 
+interface Libro extends Document, DatosLibro {}
 
 // Esquema
 
@@ -27,17 +29,11 @@ const Libros = model<Libro>("Libro", libroSchema);
 
 //Crear 
 
-const crearLibro = async () => {
+const crearLibro = async (newLibro: DatosLibro) => {
     try {
-        const nuevoLibro = new Libros({
-            titulo: "Harry Potter y la piedra filosofal",
-            autor: "J.K. Rowling",
-            anio: 1997,
-            genero: "Fantasía",
-        });
-
+        const nuevoLibro = new Libros(newLibro)         
         await nuevoLibro.save();
-        console.log("Libro creado");
+        console.log("Libro creado:", nuevoLibro);
     } catch (error) {
         console.log("Error al registrar un libro");
     }
@@ -69,10 +65,15 @@ const buscarLibrosById = async (id: string) => {
 
 // Actualizar
 
-const updateLibroById = async (id: string, data: Partial<Libro>) => {
+const actualizarLibro = async (id: string, body: object) => {
     try {
-        const libroActualizado = await Libros.findByIdAndUpdate(id, data, { new: true });
-        console.log("Libro actualizado");
+        const libroActualizado = await Libros.findByIdAndUpdate(id, body, { new: true });
+        if (!libroActualizado) {
+            console.log ("No se encuentra el libro")
+        } else {console.log(actualizarLibro)
+        }
+            
+            console.log("Libro actualizado");
     } catch (error) {
         console.log("Error al actualizar el libro");
     }
@@ -81,10 +82,13 @@ const updateLibroById = async (id: string, data: Partial<Libro>) => {
 
 //Borrar
 
-const deleteLibroById = async (id: string) => {
+const eliminarLibro = async (id: string) => {
     try {
         const libroEliminado = await Libros.findByIdAndDelete(id);
-        console.log("Libro eliminado");
+        if (!libroEliminado) {
+            console.log ("No se encuentra el libro")
+        } else {console.log(eliminarLibro)
+        }
     } catch (error) {
         console.log("Error al eliminar el libro");
     }
